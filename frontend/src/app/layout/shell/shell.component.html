@@ -1,0 +1,25 @@
+<div class="flex h-screen overflow-hidden bg-bg-primary">
+  <!-- Sidebar -->
+  <app-sidebar [collapsed]="sidebarCollapsed()" (toggle)="sidebarCollapsed.set(!sidebarCollapsed())" />
+
+  <!-- Main area -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-300">
+    <!-- Header -->
+    <app-header (menuClick)="sidebarCollapsed.set(!sidebarCollapsed())" />
+
+    <!-- Page content -->
+    <main class="flex-1 overflow-y-auto p-6">
+      <div class="page-enter">
+        <router-outlet />
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Mobile overlay -->
+@if (!sidebarCollapsed() ) {
+  <div
+    class="fixed inset-0 bg-black/50 z-20 lg:hidden"
+    (click)="sidebarCollapsed.set(true)"
+  ></div>
+}

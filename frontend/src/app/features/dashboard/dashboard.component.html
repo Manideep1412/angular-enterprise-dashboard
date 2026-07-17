@@ -1,0 +1,143 @@
+<div class="space-y-6">
+  <!-- Welcome banner -->
+  <div class="glass rounded-2xl p-6 border border-border relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-accent-blue/8 to-accent-purple/5 pointer-events-none"></div>
+    <div class="relative">
+      <h2 class="text-xl font-bold text-text-primary">Good {{ timeOfDay }}, {{ firstName }} 👋</h2>
+      <p class="text-text-secondary text-sm mt-1">Here's what's happening in your enterprise today.</p>
+      <div class="flex flex-wrap gap-2 mt-3">
+        @for (role of auth.user()?.roles ?? []; track role) {
+          <span class="text-xs font-mono px-2.5 py-0.5 rounded-full bg-accent-blue/10 border border-accent-blue/20 text-accent-blue">{{ role }}</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  @if (stats()) {
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Total Users -->
+      <div class="glass rounded-xl p-5 border border-border hover:border-border-glow transition-all">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 rounded-lg bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center">
+            <svg class="w-5 h-5 text-accent-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+          </div>
+          <span class="text-xs font-medium text-accent-green bg-accent-green/10 border border-accent-green/20 px-2 py-0.5 rounded-full">+12%</span>
+        </div>
+        <p class="text-2xl font-extrabold text-text-primary">{{ stats().kpis.totalUsers }}</p>
+        <p class="text-xs text-text-muted mt-1">Total Users</p>
+      </div>
+
+      <!-- Active Users -->
+      <div class="glass rounded-xl p-5 border border-border hover:border-border-glow transition-all">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 rounded-lg bg-accent-green/10 border border-accent-green/20 flex items-center justify-center">
+            <svg class="w-5 h-5 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <span class="text-xs font-medium text-accent-green bg-accent-green/10 border border-accent-green/20 px-2 py-0.5 rounded-full">+5%</span>
+        </div>
+        <p class="text-2xl font-extrabold text-text-primary">{{ stats().kpis.activeUsers }}</p>
+        <p class="text-xs text-text-muted mt-1">Active Users</p>
+      </div>
+
+      <!-- Total Roles -->
+      <div class="glass rounded-xl p-5 border border-border hover:border-border-glow transition-all">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 rounded-lg bg-accent-purple/10 border border-accent-purple/20 flex items-center justify-center">
+            <svg class="w-5 h-5 text-accent-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          </div>
+          <span class="text-xs font-medium text-text-muted bg-bg-card border border-border px-2 py-0.5 rounded-full">Stable</span>
+        </div>
+        <p class="text-2xl font-extrabold text-text-primary">{{ stats().kpis.totalRoles }}</p>
+        <p class="text-xs text-text-muted mt-1">Total Roles</p>
+      </div>
+
+      <!-- Events Today -->
+      <div class="glass rounded-xl p-5 border border-border hover:border-border-glow transition-all">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 rounded-lg bg-accent-cyan/10 border border-accent-cyan/20 flex items-center justify-center">
+            <svg class="w-5 h-5 text-accent-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <span class="text-xs font-medium text-accent-cyan bg-accent-cyan/10 border border-accent-cyan/20 px-2 py-0.5 rounded-full">Live</span>
+        </div>
+        <p class="text-2xl font-extrabold text-text-primary">{{ stats().kpis.auditLogsToday }}</p>
+        <p class="text-xs text-text-muted mt-1">Events Today</p>
+      </div>
+    </div>
+
+    <!-- Charts row -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 glass rounded-2xl p-6 border border-border">
+        <h3 class="text-sm font-semibold text-text-primary mb-1">Activity (Last 7 Days)</h3>
+        <p class="text-xs text-text-muted mb-4">Total audit events per day</p>
+        <div class="h-48 relative">
+          <canvas #activityChart></canvas>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6 border border-border">
+        <h3 class="text-sm font-semibold text-text-primary mb-1">Role Distribution</h3>
+        <p class="text-xs text-text-muted mb-4">Users per role</p>
+        <div class="h-36 relative">
+          <canvas #roleChart></canvas>
+        </div>
+        <div class="mt-4 space-y-1.5">
+          @for (r of stats().roleDistribution; track r.role) {
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-text-muted">{{ r.role }}</span>
+              <span class="text-text-secondary font-medium">{{ r.count }} users</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent activity -->
+    <div class="glass rounded-2xl border border-border overflow-hidden">
+      <div class="px-6 py-4 border-b border-border flex items-center justify-between">
+        <h3 class="text-sm font-semibold text-text-primary">Recent Activity</h3>
+        <a routerLink="/audit-logs" class="text-xs text-accent-blue hover:underline">View all →</a>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Action</th>
+              <th>Resource</th>
+              <th>Severity</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (log of stats().recentActivity; track log.id) {
+              <tr>
+                <td class="text-text-primary font-medium">{{ log.userEmail }}</td>
+                <td>
+                  <span class="text-xs font-mono px-2 py-0.5 rounded bg-bg-card border border-border text-text-secondary">{{ log.action }}</span>
+                </td>
+                <td>{{ log.resource }}</td>
+                <td>
+                  <span [class]="'severity-' + log.severity.toLowerCase()">{{ log.severity }}</span>
+                </td>
+                <td class="text-text-muted text-xs">{{ formatDate(log.createdAt) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  } @else if (loading()) {
+    <div class="flex items-center justify-center h-48">
+      <div class="spinner w-8 h-8"></div>
+    </div>
+  }
+</div>

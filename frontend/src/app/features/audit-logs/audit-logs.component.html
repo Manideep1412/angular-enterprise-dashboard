@@ -1,0 +1,144 @@
+<div class="space-y-5">
+  <!-- Header -->
+  <div>
+    <h2 class="text-xl font-bold text-text-primary">Audit Logs</h2>
+    <p class="text-sm text-text-muted mt-0.5">
+      {{ result()?.totalCount ?? 0 }} total events · Page {{ currentPage() }} of {{ result()?.totalPages ?? 1 }}
+    </p>
+  </div>
+
+  <!-- Filters -->
+  <div class="glass rounded-xl p-4 border border-border space-y-3">
+    <!-- Search -->
+    <div class="relative">
+      <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <input [(ngModel)]="searchQuery" (ngModelChange)="resetAndLoad()" placeholder="Search logs..." class="form-input pl-9" />
+    </div>
+    <!-- Chip filters -->
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="text-xs text-text-muted font-medium shrink-0">Action:</span>
+      @for (a of actions; track a) {
+        <button (click)="toggleAction(a)"
+          class="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full border transition-all cursor-pointer font-medium"
+          [class.border-accent-blue]="actionFilter.includes(a)"
+          [class.text-accent-blue]="actionFilter.includes(a)"
+          [class.border-border-glow]="!actionFilter.includes(a)"
+          [class.text-text-muted]="!actionFilter.includes(a)"
+          [style.background]="actionFilter.includes(a) ? 'rgba(79,142,247,0.15)' : 'transparent'">
+          @if (actionFilter.includes(a)) {
+            <svg class="w-3 h-3 shrink-0" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 6l3 3 5-5"/></svg>
+          }
+          {{ getActionIcon(a) }} {{ a }}
+        </button>
+      }
+      <span class="w-px h-4 bg-border mx-0.5 shrink-0"></span>
+      <span class="text-xs text-text-muted font-medium shrink-0">Severity:</span>
+      @for (sev of severities; track sev) {
+        <button (click)="toggleSeverity(sev)"
+          class="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full border transition-all cursor-pointer font-medium"
+          [class.border-border-glow]="!severityFilter.includes(sev)"
+          [class.text-text-muted]="!severityFilter.includes(sev)"
+          [style]="severityChipStyle(sev)">
+          @if (severityFilter.includes(sev)) {
+            <svg class="w-3 h-3 shrink-0" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 6l3 3 5-5"/></svg>
+          }
+          {{ sev }}
+        </button>
+      }
+      @if (hasFilters) {
+        <button (click)="clearFilters()"
+          class="ml-auto inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full border border-border-glow text-text-muted hover:border-accent-red hover:text-accent-red transition-all cursor-pointer">
+          <svg class="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 2l8 8M10 2l-8 8"/></svg>
+          Clear all
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="glass rounded-2xl border border-border overflow-hidden">
+    @if (loading()) {
+      <div class="flex items-center justify-center h-48"><div class="spinner w-8 h-8"></div></div>
+    } @else if (result()?.items?.length === 0) {
+      <div class="text-center py-16 text-text-muted"><p>No audit logs match your filters</p></div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              @for (col of cols; track col.label) {
+                <th>
+                  @if (col.field) {
+                    <button (click)="setSort(col.field)"
+                      class="flex items-center gap-1.5 text-left hover:text-text-primary transition-colors w-full group">
+                      {{ col.label }}
+                      <span class="flex flex-col gap-px opacity-40 group-hover:opacity-80 transition-opacity">
+                        <svg class="w-2.5 h-2.5" [class.text-accent-blue]="sort().field === col.field && sort().dir === 'asc'" viewBox="0 0 10 6" fill="currentColor"><path d="M5 0L10 6H0z"/></svg>
+                        <svg class="w-2.5 h-2.5" [class.text-accent-blue]="sort().field === col.field && sort().dir === 'desc'" viewBox="0 0 10 6" fill="currentColor"><path d="M5 6L0 0H10z"/></svg>
+                      </span>
+                    </button>
+                  } @else {
+                    {{ col.label }}
+                  }
+                </th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (log of result()?.items; track log.id) {
+              <tr>
+                <td class="text-xs font-mono text-text-muted whitespace-nowrap">{{ formatDate(log.createdAt) }}</td>
+                <td class="text-text-primary font-medium text-xs">{{ log.userEmail }}</td>
+                <td>
+                  <span class="inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-full bg-bg-card border border-border text-text-secondary">
+                    {{ getActionIcon(log.action) }} {{ log.action }}
+                  </span>
+                </td>
+                <td class="text-xs font-mono text-text-muted">{{ log.resource }}</td>
+                <td class="text-xs max-w-xs truncate" [title]="log.description">{{ log.description }}</td>
+                <td><span [class]="getSeverityClass(log.severity)">{{ log.severity }}</span></td>
+                <td class="text-xs font-mono text-text-muted">{{ log.ipAddress ?? '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="px-6 py-4 border-t border-border flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <p class="text-xs text-text-muted">Showing {{ pageStart }}–{{ pageEnd }} of {{ result()?.totalCount ?? 0 }} logs</p>
+          <select [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()" class="form-input w-auto text-xs py-1.5">
+            <option [value]="5">5 / page</option>
+            <option [value]="10">10 / page</option>
+            <option [value]="50">50 / page</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-1">
+          <button (click)="changePage(1)" [disabled]="currentPage() <= 1" class="btn-secondary px-2.5 py-1.5 text-xs disabled:opacity-40" title="First">«</button>
+          <button (click)="changePage(currentPage() - 1)" [disabled]="currentPage() <= 1" class="btn-secondary px-3 py-1.5 text-xs disabled:opacity-40">← Prev</button>
+
+          @for (p of pageNumbers(); track p) {
+            @if (p === -1) {
+              <span class="px-1 text-text-muted text-xs">…</span>
+            } @else {
+              <button (click)="changePage(p)"
+                class="px-3 py-1.5 text-xs rounded-lg border transition-all"
+                [class.bg-accent-blue]="p === currentPage()"
+                [class.text-white]="p === currentPage()"
+                [class.border-accent-blue]="p === currentPage()"
+                [class.btn-secondary]="p !== currentPage()">
+                {{ p }}
+              </button>
+            }
+          }
+
+          <button (click)="changePage(currentPage() + 1)" [disabled]="currentPage() >= (result()?.totalPages ?? 1)" class="btn-secondary px-3 py-1.5 text-xs disabled:opacity-40">Next →</button>
+          <button (click)="changePage(result()?.totalPages ?? 1)" [disabled]="currentPage() >= (result()?.totalPages ?? 1)" class="btn-secondary px-2.5 py-1.5 text-xs disabled:opacity-40" title="Last">»</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

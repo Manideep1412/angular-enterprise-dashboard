@@ -1,0 +1,104 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div>
+    <h2 class="text-xl font-bold text-text-primary">Role Management</h2>
+    <p class="text-sm text-text-muted mt-0.5">{{ roles().length }} roles configured</p>
+  </div>
+
+  @if (loading()) {
+    <div class="flex items-center justify-center h-48"><div class="spinner w-8 h-8"></div></div>
+  } @else {
+    <!-- Role cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      @for (role of roles(); track role.id) {
+        <div
+          (click)="selectedRole.set(selectedRole()?.id === role.id ? null : role)"
+          class="glass rounded-xl p-5 border border-border hover:border-border-glow transition-all cursor-pointer"
+          [class.border-accent-blue]="selectedRole()?.id === role.id"
+          [style.box-shadow]="selectedRole()?.id === role.id ? '0 0 20px rgba(79,142,247,0.1)' : ''"
+        >
+          <div class="flex items-start gap-3 mb-4">
+            <div
+              class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
+              [style.background]="role.color"
+            >
+              {{ role.name.charAt(0) }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-bold text-text-primary">{{ role.name }}</p>
+              <p class="text-xs text-text-muted mt-0.5 line-clamp-2">{{ role.description }}</p>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-text-muted">{{ role.userCount }} users</span>
+            <span class="text-text-muted">{{ role.permissions.length }} permissions</span>
+          </div>
+
+          <!-- Mini permission pills -->
+          <div class="flex flex-wrap gap-1 mt-3">
+            @for (resource of uniqueResources(role); track resource) {
+              <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-bg-card border border-border text-text-muted">{{ resource }}</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Permission matrix -->
+    @if (selectedRole()) {
+      <div class="glass rounded-2xl border border-border overflow-hidden animate-fade-in">
+        <div class="px-6 py-4 border-b border-border flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold" [style.background]="selectedRole()!.color">
+            {{ selectedRole()!.name.charAt(0) }}
+          </div>
+          <div>
+            <h3 class="font-bold text-text-primary">{{ selectedRole()!.name }} — Permission Matrix</h3>
+            <p class="text-xs text-text-muted">{{ selectedRole()!.description }}</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto p-6">
+          <table class="w-full text-sm">
+            <thead>
+              <tr>
+                <th class="text-left py-2 pr-8 text-xs font-medium text-text-muted uppercase tracking-wider">Resource</th>
+                @for (action of actions; track action) {
+                  <th class="text-center py-2 px-4 text-xs font-medium text-text-muted uppercase tracking-wider">{{ action }}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (resource of resources; track resource) {
+                <tr class="border-t border-border/50">
+                  <td class="py-3 pr-8 font-mono text-text-secondary">{{ resource }}</td>
+                  @for (action of actions; track action) {
+                    <td class="py-3 px-4 text-center">
+                      @if (hasPermission(selectedRole()!, resource, action)) {
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-accent-green/15 border border-accent-green/30">
+                          <svg class="w-3.5 h-3.5 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                          </svg>
+                        </span>
+                      } @else {
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-bg-card border border-border">
+                          <svg class="w-3 h-3 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                          </svg>
+                        </span>
+                      }
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    } @else {
+      <div class="text-center py-8 text-text-muted text-sm">
+        ↑ Click a role card to view its permission matrix
+      </div>
+    }
+  }
+</div>

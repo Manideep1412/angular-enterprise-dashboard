@@ -1,0 +1,38 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ed-backend
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Data Source=/data/enterprise.db
+      - Jwt__Key=YourSuperSecretKeyHereMustBeAtLeast32Chars!
+      - Jwt__Issuer=EnterpriseDashboard
+      - Jwt__Audience=EnterpriseDashboardUI
+      - Jwt__ExpiryMinutes=60
+    volumes:
+      - db-data:/data
+    networks:
+      - ed-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ed-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - ed-network
+
+volumes:
+  db-data:
+
+networks:
+  ed-network:
+    driver: bridge

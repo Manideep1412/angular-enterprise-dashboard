@@ -1,0 +1,122 @@
+<div class="min-h-screen bg-bg-primary flex items-center justify-center p-4" style="background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(79,142,247,0.12), transparent);">
+  <!-- Background grid -->
+  <div class="fixed inset-0 pointer-events-none opacity-30"
+    style="background-image: linear-gradient(rgba(79,142,247,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(79,142,247,0.03) 1px, transparent 1px); background-size: 60px 60px;">
+  </div>
+
+  <div class="w-full max-w-md relative animate-fade-in">
+    <!-- Card -->
+    <div class="glass rounded-2xl p-8 border border-border shadow-2xl">
+
+      <!-- Logo -->
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2v-4M9 21H5a2 2 0 01-2-2v-4m0 0h18"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-text-primary">Enterprise Dashboard</h1>
+          <p class="text-xs text-text-muted font-mono">Angular 19 + .NET 9</p>
+        </div>
+      </div>
+
+      <h2 class="text-2xl font-bold text-text-primary mb-1">Welcome back</h2>
+      <p class="text-sm text-text-muted mb-8">Sign in to access the dashboard</p>
+
+      <!-- Form -->
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+        <!-- Email -->
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium text-text-muted">Email Address</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="admin@enterprise.dev"
+            class="form-input"
+            [class.border-red-500]="isFieldInvalid('email')"
+          />
+          @if (isFieldInvalid('email')) {
+            <p class="text-xs text-red-400">Valid email required</p>
+          }
+        </div>
+
+        <!-- Password -->
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium text-text-muted">Password</label>
+          <div class="relative">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••••"
+              class="form-input pr-10"
+              [class.border-red-500]="isFieldInvalid('password')"
+            />
+            <button
+              type="button"
+              (click)="showPassword.set(!showPassword())"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                @if (showPassword()) {
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                } @else {
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                }
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Error message -->
+        @if (auth.error()) {
+          <div class="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/25 text-red-400 text-sm">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            {{ auth.error() }}
+          </div>
+        }
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          [disabled]="auth.isLoading() || form.invalid"
+          class="btn-primary w-full justify-center py-3"
+        >
+          @if (auth.isLoading()) {
+            <span class="spinner w-4 h-4"></span>
+            Signing in...
+          } @else {
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+            </svg>
+            Sign In
+          }
+        </button>
+      </form>
+
+      <!-- Demo credentials -->
+      <div class="mt-6 p-4 rounded-xl bg-bg-card border border-border">
+        <p class="text-xs font-mono text-text-muted mb-2">Demo credentials:</p>
+        <div class="space-y-1 text-xs font-mono">
+          <div class="flex justify-between">
+            <span class="text-accent-blue">Admin:</span>
+            <span class="text-text-secondary">admin&#64;enterprise.dev / Admin&#64;123</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-accent-purple">Manager:</span>
+            <span class="text-text-secondary">sarah.j&#64;enterprise.dev / Manager&#64;123</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tech badges -->
+    <div class="mt-6 flex flex-wrap justify-center gap-2">
+      @for (badge of ['Angular 19', '.NET 9', 'JWT Auth', 'RBAC', 'SQLite']; track badge) {
+        <span class="text-xs font-mono px-3 py-1 rounded-full bg-bg-card border border-border text-text-muted">{{ badge }}</span>
+      }
+    </div>
+  </div>
+</div>
