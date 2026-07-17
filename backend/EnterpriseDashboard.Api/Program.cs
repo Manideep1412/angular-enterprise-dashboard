@@ -57,16 +57,15 @@ builder.Services.AddAuthorization(options =>
 });
 
 // ── CORS ───────────────────────────────────────────────────────────────────
-var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-                     ?? ["http://localhost:4200"];
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
-        policy.WithOrigins(allowedOrigins)
+        policy.SetIsOriginAllowed(_ => true)
               .AllowAnyMethod()
               .AllowAnyHeader());
 });
+
+builder.Services.AddHealthChecks();
 
 // ── Application Services ───────────────────────────────────────────────────
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -133,6 +132,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseSerilogRequestLogging();
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 Log.Information("Enterprise Dashboard API starting on {Env}", app.Environment.EnvironmentName);
 app.Run();
