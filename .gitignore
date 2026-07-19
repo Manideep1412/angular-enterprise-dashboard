@@ -29,6 +29,24 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# ── Test output ───────────────────────────────────────────────────
+# Angular/Karma coverage reports
+frontend/coverage/
+frontend/.nyc_output/
+frontend/out-tsc/
+
+# .NET test results and coverage
+backend/TestResults/
+backend/**/*.coverage
+backend/**/coverage.cobertura.xml
+backend/**/lcov.info
+
+# Playwright / Cypress (if added later)
+test-results/
+playwright-report/
+cypress/screenshots/
+cypress/videos/
+
 # ── Env files ─────────────────────────────────────────────────────
 .env
 .env.local
