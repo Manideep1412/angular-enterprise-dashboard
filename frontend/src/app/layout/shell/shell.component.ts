@@ -15,7 +15,7 @@ const SIDEBAR_KEY = 'ed_sidebar_collapsed';
 })
 export class ShellComponent {
   sidebarCollapsed = signal<boolean>(
-    localStorage.getItem(SIDEBAR_KEY) === 'true'
+    window.innerWidth < 1024 ? true : localStorage.getItem(SIDEBAR_KEY) === 'true'
   );
 
   constructor() {

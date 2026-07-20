@@ -1,6 +1,6 @@
 <aside
-  [class]="collapsed ? 'w-16' : 'w-64'"
-  class="h-full bg-bg-secondary border-r border-border flex flex-col transition-all duration-300 z-30 relative flex-shrink-0 hidden lg:flex"
+  [class]="collapsed ? 'hidden lg:flex lg:w-16' : 'flex w-64'"
+  class="fixed lg:relative h-full bg-bg-secondary border-r border-border flex-col transition-all duration-300 z-30 flex-shrink-0"
 >
   <!-- Header: two fully separate layouts to avoid overflow issues -->
   @if (collapsed) {
